@@ -1,8 +1,11 @@
+previews:
+  generation: automatic
+
 services:
   - type: web
     plan: free
     runtime: docker
-    name: mon-n8n-waktpay
+    name: n8n-service
     healthCheckPath: /healthz
     envVars:
       - key: PORT
@@ -13,6 +16,8 @@ services:
         value: "0.0.0.0"
       - key: N8N_PROTOCOL
         value: "https"
+      - key: DB_TYPE
+        value: "sqlite"
       - key: GENERIC_TIMEZONE
         value: "Africa/Nouakchott"
       - key: TZ
@@ -23,29 +28,3 @@ services:
         value: "true"
       - key: N8N_ENCRYPTION_KEY
         generateValue: true
-      - key: DB_TYPE
-        value: postgresdb
-      - key: DB_POSTGRESDB_DATABASE
-        fromDatabase:
-          name: n8n-db
-          property: database
-      - key: DB_POSTGRESDB_HOST
-        fromDatabase:
-          name: n8n-db
-          property: host
-      - key: DB_POSTGRESDB_PORT
-        fromDatabase:
-          name: n8n-db
-          property: port
-      - key: DB_POSTGRESDB_PASSWORD
-        fromDatabase:
-          name: n8n-db
-          property: password
-      - key: DB_POSTGRESDB_USER
-        fromDatabase:
-          name: n8n-db
-          property: user
-
-databases:
-  - name: n8n-db
-    plan: free
