@@ -1,0 +1,108 @@
+{
+  "name": "Keep-Alive Anti-Veille 24/7 & API Status",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Ping Toutes les 10 Min",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 240]
+    },
+    {
+      "parameters": {
+        "url": "={{ ($env.WEBHOOK_URL || 'http://127.0.0.1:5678/') + 'healthz' }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Keep-Alive Healthcheck",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [480, 240]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "status",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Webhook Status (/webhook/status)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 440],
+      "webhookId": "waktpay-status-webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1",
+              "name": "status",
+              "value": "operational",
+              "type": "string"
+            },
+            {
+              "id": "2",
+              "name": "instance",
+              "value": "mon-n8n (WaktPay)",
+              "type": "string"
+            },
+            {
+              "id": "3",
+              "name": "keepAlive",
+              "value": "active (24/7 sans veille)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "Réponse JSON",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 440]
+    }
+  ],
+  "connections": {
+    "Ping Toutes les 10 Min": {
+      "main": [
+        [
+          {
+            "node": "Keep-Alive Healthcheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Status (/webhook/status)": {
+      "main": [
+        [
+          {
+            "node": "Réponse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Africa/Nouakchott"
+  }
+}
